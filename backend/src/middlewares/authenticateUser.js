@@ -1,4 +1,4 @@
-const { supabase } = require("../utils/supabase");
+const { supabase } = require("../config/supabase");
 
 exports.authenticateUser = async (req, res, next) => {
     try {

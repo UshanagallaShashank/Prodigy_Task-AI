@@ -1,18 +1,94 @@
+// ✅ Define the database connection
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") // Ensure this exists in .env
 }
 
+// ✅ Generate Prisma Client
 generator client {
   provider = "prisma-client-js"
 }
 
+// ✅ User Model
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  role      Role     @default(USER)
+  email     String   @unique
+  password  String
+  tasks     Task[]   @relation("UserTasks") // Personal tasks created by user
+  createdAt DateTime @default(now())
+}
+
+// ✅ Role Enum (For future expansion)
+enum Role {
+  USER
+  ADMIN
+}
+
+// ✅ Task Model (Only linked to one user)
 model Task {
-  id          String   @id @default(uuid())
-  title       String
-  description String?
+  id          String     @id @default(uuid())
+  title       String     @db.VarChar(255)
+  description String?    @db.Text
   dueDate     DateTime
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      TaskStatus @default(PENDING)
+  priority    Priority   @default(MEDIUM)
+  priorityColor String   @default("#FFA500") // Default: Orange (Medium)
+
+  // ✅ Soft delete with timestamp instead of boolean
+  deletedAt   DateTime? 
+
+  // ✅ Personal Task Relationship
+  userId String
+  user   User   @relation("UserTasks", fields: [userId], references: [id], onDelete: Cascade)
+
+  // ✅ Related Subtasks & Tags
+  subtasks Subtask[]
+  tags     Tag[] @relation("TaskTags")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId]) // ✅ Optimize user-task queries
+}
+
+// ✅ Subtask Model (For breaking down tasks)
+model Subtask {
+  id        String  @id @default(uuid())
+  title     String  @db.VarChar(255)
+  completed Boolean @default(false)
+  taskId    String
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+// ✅ Tag Model (For categorization)
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  tasks Task[] @relation("TaskTags")
+}
+
+// ✅ Enum for Task Status
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+// ✅ Enum for Priority Levels with Colors
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ✅ Enum for Recurring Task Frequencies
+enum Recurrence {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
 }

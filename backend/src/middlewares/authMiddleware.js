@@ -1,4 +1,4 @@
-const { supabase } = require("../utils/supabase");
+const { supabase } = require("../config/supabase");
 
 exports.isAdmin = async (req, res, next) => {
     try {

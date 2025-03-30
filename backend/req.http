@@ -1,0 +1,62 @@
+### ✅ Create a Task
+POST http://localhost:5000/api/tasks
+Authorization: Bearer <token-code>
+Content-Type: application/json
+
+{
+   "title": "Complete Sprint Tasks",
+   "description": "Finish all pending tasks before the deadline.",
+   "dueDate": "2025-04-01T12:00:00Z",
+   "priority": "HIGH",
+   "tags": ["Work", "Urgent"]
+}
+
+
+### ✅ Get All Tasks for Authenticated User
+GET http://localhost:5000/api/tasks
+Authorization: Bearer <token-code>
+
+### ✅ Update a Task (Replace TASK_ID)
+PUT http://localhost:5000/api/tasks/d632312d-02ad-46b9-9f7f-17733de14cf1
+Authorization: Bearer <token-code>
+Content-Type: application/json
+
+{
+  "title": "Update Code review process",
+  "description": "Refine planning with team",
+  "dueDate": "2025-04-06T18:00:00.000Z",
+  "priority": "MEDIUM",
+  "status": "IN_PROGRESS"
+}
+
+### ✅ Delete a Task (Replace TASK_ID)
+DELETE http://localhost:5000/api/tasks/d632312d-02ad-46b9-9f7f-17733de14cf1
+Authorization: Bearer <token-code>
+
+
+### Create a Subtask for a Task
+POST http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
+Authorization: Bearer <token-code>
+Content-Type: application/json
+
+{
+  "title": "Subtask title"
+}
+
+### Get all Subtasks for a Task
+GET http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
+Authorization: Bearer <token-code>
+
+### Update a Subtask
+PUT http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks/c0a0651d-2ad3-4935-92bb-73ed5ab8f1f0
+Authorization: Bearer <token-code>
+Content-Type: application/json
+
+{
+  "title": "Updated subtask title",
+  "completed": true
+}
+
+### Delete a Subtask
+DELETE http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks/c0a0651d-2ad3-4935-92bb-73ed5ab8f1f0
+Authorization: Bearer <token-code>

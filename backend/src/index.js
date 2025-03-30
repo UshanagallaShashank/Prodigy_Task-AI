@@ -1,31 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { PrismaClient } = require("@prisma/client");
+const { connectDB, prisma } = require("./config/db"); // Import DB setup
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
 dotenv.config();
 
 const app = express();
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
-
-// Check database connection
-async function checkDatabaseConnection() {
-  try {
-    // Execute a simple query to test the connection
-    await prisma.$queryRaw`SELECT 1`;
-    console.log("✅ Database connection successful");
-    return true;
-  } catch (error) {
-    console.error("❌ Database connection failed:", error);
-    return false;
-  }
-}
 
 // 📝 Test API
 app.get("/", (req, res) => {
@@ -34,24 +21,28 @@ app.get("/", (req, res) => {
 
 // Add a route to check DB connection status
 app.get("/api/db-status", async (req, res) => {
-    const isConnected = await checkDatabaseConnection();
-    res.json({ 
-        status: isConnected ? "connected" : "disconnected",
-        message: isConnected ? "Database connection successful" : "Database connection failed"
-    });
+    try {
+        await prisma.$connect();
+        res.json({ status: "connected", message: "Database connection successful" });
+    } catch (error) {
+        res.json({ status: "disconnected", message: "Database connection failed", error });
+    }
 });
+
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // ✅ Start Server
 app.listen(PORT, async () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
-    // Check DB connection on server start
-    await checkDatabaseConnection();
+    await connectDB(); // Ensure DB is connected before processing requests
 });
 
-// Properly close the Prisma connection when the app terminates
-process.on('SIGINT', async () => {
+// Graceful shutdown
+process.on("SIGINT", async () => {
     await prisma.$disconnect();
+    console.log("🛑 Prisma disconnected. Server shutting down.");
     process.exit(0);
 });
