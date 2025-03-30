@@ -28,27 +28,32 @@ enum Role {
 
 // ✅ Task Model (Only linked to one user)
 model Task {
-  id          String     @id @default(uuid())
-  title       String     @db.VarChar(255)
-  description String?    @db.Text
-  dueDate     DateTime
-  status      TaskStatus @default(PENDING)
-  priority    Priority   @default(MEDIUM)
-  priorityColor String   @default("#FFA500") // Default: Orange (Medium)
-
+  id                String     @id @default(uuid())
+  title             String     @db.VarChar(255)
+  description       String?    @db.Text
+  suggestedPriority Priority?  @default(MEDIUM)  // AI-generated suggested priority
+  suggestedDescription String? @db.Text         // AI-generated suggested description
+  dueDate           DateTime
+  status            TaskStatus @default(PENDING)
+  priority          Priority   @default(MEDIUM)
+  priorityColor     String     @default("#FFA500") // Default: Orange (Medium)
+  
   // ✅ Soft delete with timestamp instead of boolean
-  deletedAt   DateTime? 
+  deletedAt         DateTime? 
 
   // ✅ Personal Task Relationship
-  userId String
-  user   User   @relation("UserTasks", fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User       @relation("UserTasks", fields: [userId], references: [id], onDelete: Cascade)
 
   // ✅ Related Subtasks & Tags
-  subtasks Subtask[]
-  tags     Tag[] @relation("TaskTags")
+  subtasks          Subtask[]
+  tags              Tag[]      @relation("TaskTags")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  aiUpdatedAt       DateTime?  // Timestamp when AI made the last update
+  updatedStatus     String?    // Track AI-generated status updates
+  updatedPriority   String?    // Track AI-generated priority updates
 
   @@index([userId]) // ✅ Optimize user-task queries
 }
@@ -91,4 +96,14 @@ enum Recurrence {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+// ✅ Audit Log Model for AI Suggestions/Updates (Optional)
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String   // Link to the user who requested the AI suggestion
+  taskId      String   // Link to the task being updated
+  suggestion  String   // The suggestion made by AI (e.g., Task Priority, Status)
+  createdAt   DateTime @default(now()) // Timestamp of the suggestion
+  type        String   // Type of suggestion: "Task Priority", "Task Status", etc.
 }

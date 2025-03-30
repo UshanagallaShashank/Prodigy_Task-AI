@@ -1,24 +1,32 @@
 ### ✅ Create a Task
 POST http://localhost:5000/api/tasks
-Authorization: Bearer <token-code>
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-   "title": "Complete Sprint Tasks",
-   "description": "Finish all pending tasks before the deadline.",
-   "dueDate": "2025-04-01T12:00:00Z",
+   "title": "Complete Leetcode dailycode",
+   "description": "Finish leetcode daily code as you streak is 108 days",
+   "dueDate": "2025-03-31T12:10:00Z",
    "priority": "HIGH",
-   "tags": ["Work", "Urgent"]
+   "tags": ["Leetcode"]
 }
 
 
 ### ✅ Get All Tasks for Authenticated User
 GET http://localhost:5000/api/tasks
-Authorization: Bearer <token-code>
+Authorization: Bearer <token>
+
+### ✅ Get Tasks with AI Prioritization
+GET http://localhost:5000/api/tasks?includePrioritization=true
+Authorization: Bearer <token>
+
+### ✅ Get All Tasks Including Completed
+GET http://localhost:5000/api/tasks?includeCompleted=true
+Authorization: Bearer <token>
 
 ### ✅ Update a Task (Replace TASK_ID)
-PUT http://localhost:5000/api/tasks/d632312d-02ad-46b9-9f7f-17733de14cf1
-Authorization: Bearer <token-code>
+PUT http://localhost:5000/api/tasks/4dadaeeb-425e-4664-9ea3-3cbcb4c33dae
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -29,27 +37,50 @@ Content-Type: application/json
   "status": "IN_PROGRESS"
 }
 
-### ✅ Delete a Task (Replace TASK_ID)
-DELETE http://localhost:5000/api/tasks/d632312d-02ad-46b9-9f7f-17733de14cf1
-Authorization: Bearer <token-code>
+### ✅ Update a Task with AI Suggestions
+PUT http://localhost:5000/api/tasks/4dadaeeb-425e-4664-9ea3-3cbcb4c33dae
+Authorization: Bearer <token>
+Content-Type: application/json
 
+{
+  "title": "Update Code review process",
+  "description": "Refine planning with team",
+  "useAiSuggestions": true
+}
 
-### Create a Subtask for a Task
+### ✅ Delete a Task (Replace TASK_ID) - Soft Delete
+DELETE http://localhost:5000/api/tasks/4dadaeeb-425e-4664-9ea3-3cbcb4c33dae
+Authorization: Bearer <token>
+
+### ✅ Delete a Task Permanently (Hard Delete)
+DELETE http://localhost:5000/api/tasks/4dadaeeb-425e-4664-9ea3-3cbcb4c33dae?hardDelete=true
+Authorization: Bearer <token>
+
+### ✅ Create a Subtask for a Task
 POST http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
-Authorization: Bearer <token-code>
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
   "title": "Subtask title"
 }
 
-### Get all Subtasks for a Task
-GET http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
-Authorization: Bearer <token-code>
+### ✅ Generate AI Subtasks for a Task
+POST http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
+Authorization: Bearer <token>
+Content-Type: application/json
 
-### Update a Subtask
+{
+  "generateWithAi": true
+}
+
+### ✅ Get all Subtasks for a Task
+GET http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks
+Authorization: Bearer <token>
+
+### ✅ Update a Subtask
 PUT http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks/c0a0651d-2ad3-4935-92bb-73ed5ab8f1f0
-Authorization: Bearer <token-code>
+Authorization: Bearer <token>
 Content-Type: application/json
 
 {
@@ -57,6 +88,30 @@ Content-Type: application/json
   "completed": true
 }
 
-### Delete a Subtask
+### ✅ Delete a Subtask
 DELETE http://localhost:5000/api/tasks/c4dd636c-c2fc-455c-8ba6-baecadeec562/subtasks/c0a0651d-2ad3-4935-92bb-73ed5ab8f1f0
-Authorization: Bearer <token-code>
+Authorization: Bearer <token>
+
+### ✅ Get Workload Analysis
+GET http://localhost:5000/api/tasks/workload?timeframe=week
+Authorization: Bearer <token>
+
+### ✅ Get Workload Analysis - Monthly
+GET http://localhost:5000/api/tasks/workload?timeframe=month
+Authorization: Bearer <token>
+
+### ✅ Get Workload Analysis - Quarterly
+GET http://localhost:5000/api/tasks/workload?timeframe=quarter
+Authorization: Bearer <token>
+
+### ✅ Get Deleted Tasks (Trash Bin)
+GET http://localhost:5000/api/tasks/trash
+Authorization: Bearer <token>
+
+### ✅ Restore a Task from Trash
+POST http://localhost:5000/api/tasks/d632312d-02ad-46b9-9f7f-17733de14cf1/restore
+Authorization: Bearer <token>
+
+### ✅ Empty Trash (Permanently Delete All Trashed Tasks)
+DELETE http://localhost:5000/api/tasks/trash
+Authorization: Bearer <token>
